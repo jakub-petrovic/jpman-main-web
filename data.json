@@ -1,0 +1,29 @@
+{
+  "profile": {
+    "name": "Skibiďák",
+    "bio": "Discord mod, poloprofesionální klikátor na bann hammer.",
+    "avatar": "https://example.com/avatar.png"
+  },
+  "links": [
+    {
+      "title": "Můj Discord server",
+      "url": "https://discord.gg/něco",
+      "icon": "discord"
+    },
+    {
+      "title": "YouTube",
+      "url": "https://youtube.com/@něco",
+      "icon": "youtube"
+    },
+    {
+      "title": "Instagram",
+      "url": "https://instagram.com/něco",
+      "icon": "instagram"
+    },
+    {
+      "title": "Hlavní web",
+      "url": "https://mojedomena.cz",
+      "icon": "web"
+    }
+  ]
+}
