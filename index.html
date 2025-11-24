@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Odkazy | Skibiďák</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --accent-blue: #38bdf8;
+      --accent-red: #f97373;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148, 163, 184, 0.4);
+      --radius-lg: 16px;
+      --radius-xl: 999px;
+      --transition-fast: 150ms ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1d2951 0, #020617 40%),
+        radial-gradient(circle at bottom right, #3b0d0c 0, #020617 45%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(
+        rgba(15, 23, 42, 0.25) 1px,
+        transparent 1px
+      );
+      background-size: 100% 2px;
+      mix-blend-mode: soft-light;
+      opacity: 0.4;
+      z-index: -1;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 480px;
+      backdrop-filter: blur(18px);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.08), transparent 55%),
+        radial-gradient(circle at bottom, rgba(248, 113, 113, 0.08), transparent 55%),
+        linear-gradient(to bottom right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.92));
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow:
+        0 0 45px rgba(8, 47, 73, 0.7),
+        0 0 65px rgba(127, 29, 29, 0.5);
+      padding: 24px 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-orb {
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      filter: blur(30px);
+      opacity: 0.35;
+      z-index: -1;
+    }
+
+    .glow-orb.blue {
+      top: -70px;
+      left: -80px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.9), transparent 65%);
+    }
+
+    .glow-orb.red {
+      bottom: -100px;
+      right: -80px;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.9), transparent 65%);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      border: 2px solid rgba(248, 250, 252, 0.18);
+      box-shadow:
+        0 0 20px rgba(56, 189, 248, 0.65),
+        0 0 28px rgba(248, 113, 113, 0.65);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: radial-gradient(circle at 30% 30%, #0f172a, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-main);
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .profile-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .name-pill {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .bio {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.09), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(248, 113, 113, 0.09), transparent 55%),
+        linear-gradient(to right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.92));
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+        border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .link-item::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.2), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.2), transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      pointer-events: none;
+    }
+
+    .link-item:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow:
+        0 0 18px rgba(56, 189, 248, 0.6),
+        0 0 24px rgba(248, 113, 113, 0.5);
+      border-color: rgba(248, 250, 252, 0.5);
+    }
+
+    .link-item:hover::before {
+      opacity: 1;
+    }
+
+    .link-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.7));
+      text-shadow:
+        0 0 8px rgba(56, 189, 248, 0.9),
+        0 0 10px rgba(248, 113, 113, 0.9);
+    }
+
+    .link-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .link-title {
+      font-size: 0.98rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .link-arrow-btn {
+      flex-shrink: 0;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.28), transparent 70%),
+        radial-gradient(circle at 100% 100%, rgba(248, 113, 113, 0.4), transparent 70%);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(248, 250, 252, 0.52);
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+      box-shadow:
+        0 0 10px rgba(56, 189, 248, 0.75),
+        0 0 14px rgba(248, 113, 113, 0.8);
+    }
+
+    .link-arrow-btn span.arrow {
+      display: inline-block;
+      transform: translateY(1px);
+      transition: transform var(--transition-fast);
+    }
+
+    .link-item:hover .link-arrow-btn span.arrow {
+      transform: translate(2px, 1px);
+    }
+
+    .link-item:hover .link-arrow-btn {
+      transform: translateX(1px);
+    }
+
+    footer {
+      margin-top: 18px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .small-pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.65rem;
+      opacity: 0.9;
+    }
+
+    .error {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #fecaca;
+    }
+
+    @media (max-width: 480px) {
+      .wrapper {
+        padding: 18px 16px 16px;
+        border-radius: 20px;
+      }
+
+      header {
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 56px;
+        height: 56px;
+      }
+
+      .name {
+        font-size: 1.2rem;
+      }
+
+      .bio {
+        font-size: 0.86rem;
+      }
+
+      .link-item {
+        padding: 9px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+
+  <div class="wrapper">
+    <div class="glow-orb blue"></div>
+    <div class="glow-orb red"></div>
+
+    <header>
+      <div class="avatar" id="avatar">
+        <span id="avatar-initials">SK</span>
+      </div>
+      <div class="profile-text">
+        <div class="name">
+          <span id="profile-name">Uživatelské jméno</span>
+          <span class="name-pill">LINK HUB</span>
+        </div>
+        <p class="bio" id="profile-bio">
+          Všechno na jednom místě. Protože proč to mít přehledné, když to může být přehledné a neonové.
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <div class="links" id="links"></div>
+      <div class="error" id="error" hidden></div>
+    </main>
+
+    <footer>
+      <div class="small-pill">NEON RED / BLUE</div>
+      <div>&copy; <span id="year"></span> <span id="profile-name-footer">User</span></div>
+    </footer>
+  </div>
+
+  <script>
+    function getInitialsFromName(name) {
+      if (!name) return "?";
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) {
+        return parts[0].slice(0, 2).toUpperCase();
+      }
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+
+    function createIconElement(type, title) {
+      const el = document.createElement("div");
+      el.className = "link-icon";
+
+      const span = document.createElement("span");
+      let iconChar = "●";
+
+      const lower = (type || "").toLowerCase();
+
+      if (lower === "discord") iconChar = "💬";
+      else if (lower === "youtube") iconChar = "▶";
+      else if (lower === "instagram") iconChar = "📸";
+      else if (lower === "tiktok") iconChar = "🎵";
+      else if (lower === "github") iconChar = "💻";
+      else if (lower === "twitter" || lower === "x") iconChar = "🐦";
+      else if (lower === "web" || lower === "website") iconChar = "🌐";
+      else iconChar = (title || "?").trim()[0]?.toUpperCase() || "?";
+
+      span.textContent = iconChar;
+      el.appendChild(span);
+      return el;
+    }
+
+    function createLinkItem(link) {
+      const item = document.createElement("div");
+      item.className = "link-item";
+
+      const icon = createIconElement(link.icon, link.title);
+      item.appendChild(icon);
+
+      const content = document.createElement("div");
+      content.className = "link-content";
+
+      const title = document.createElement("div");
+      title.className = "link-title";
+      title.textContent = link.title || "Bez názvu";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "link-arrow-btn";
+      btn.innerHTML = `
+        <span>JÍT NA WEB</span>
+        <span class="arrow">↗</span>
+      `;
+
+      content.appendChild(title);
+      content.appendChild(btn);
+      item.appendChild(content);
+
+      const url = link.url;
+      const open = () => {
+        if (!url) return;
+        window.open(url, "_blank", "noopener,noreferrer");
+      };
+
+      item.addEventListener("click", open);
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        open();
+      });
+
+      return item;
+    }
+
+    async function loadData() {
+      const nameEl = document.getElementById("profile-name");
+      const nameFooterEl = document.getElementById("profile-name-footer");
+      const bioEl = document.getElementById("profile-bio");
+      const avatarEl = document.getElementById("avatar");
+      const avatarInitialsEl = document.getElementById("avatar-initials");
+      const linksContainer = document.getElementById("links");
+      const errorEl = document.getElementById("error");
+
+      try {
+        const res = await fetch("data.json", { cache: "no-cache" });
+        if (!res.ok) {
+          throw new Error("Nepodařilo se načíst data.json (" + res.status + ")");
+        }
+        const data = await res.json();
+
+        // Profil
+        const profile = data.profile || {};
+        const name = profile.name || "Uživatel";
+        const bio = profile.bio || "";
+
+        nameEl.textContent = name;
+        nameFooterEl.textContent = name;
+
+        if (bio) bioEl.textContent = bio;
+
+        const avatarUrl = profile.avatar;
+        if (avatarUrl) {
+          const img = document.createElement("img");
+          img.src = avatarUrl;
+          img.alt = name;
+          img.onerror = () => {
+            avatarEl.innerHTML = "";
+            avatarEl.appendChild(avatarInitialsEl);
+            avatarInitialsEl.textContent = getInitialsFromName(name);
+          };
+          avatarEl.innerHTML = "";
+          avatarEl.appendChild(img);
+        } else {
+          avatarInitialsEl.textContent = getInitialsFromName(name);
+        }
+
+        // Links
+        linksContainer.innerHTML = "";
+        const links = Array.isArray(data.links) ? data.links : [];
+        if (!links.length) {
+          const empty = document.createElement("div");
+          empty.className = "bio";
+          empty.textContent = "Žádné odkazy zatím nejsou. Přidej je do data.json → pole \"links\".";
+          linksContainer.appendChild(empty);
+        } else {
+          links.forEach((link) => {
+            const item = createLinkItem(link);
+            linksContainer.appendChild(item);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        errorEl.hidden = false;
+        errorEl.textContent =
+          "Něco se rozbilo při načítání data.json. Zkontroluj, že soubor existuje ve stejné složce a že JSON je validní.";
+      }
+    }
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    loadData();
+  </script>
+</body>
+</html>
